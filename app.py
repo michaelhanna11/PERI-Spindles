@@ -54,7 +54,6 @@ def get_capacities(prop_type: str, length: float) -> Tuple[Optional[float], Opti
     for i in range(len(data)-1):
         if data[i][0] <= length <= data[i+1][0]:
             comp = interpolate_value(length, data[i][0], data[i][1], data[i+1][0], data[i+1][1])
-            # Tension is only specified at minimum length for most props
             tension = data[i][2] if length == data[i][0] else None
             return comp, tension
     
@@ -66,7 +65,7 @@ def get_capacities(prop_type: str, length: float) -> Tuple[Optional[float], Opti
     return None, None
 
 # Streamlit app
-st.title("Push-Pull Prop Capacity Calculator")
+st.title("PERI Push-Pull Prop Capacity Calculator")
 
 # Prop selection
 prop_type = st.selectbox("Select Prop Type", list(props_data.keys()))
