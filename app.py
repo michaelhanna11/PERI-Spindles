@@ -84,16 +84,22 @@ def get_capacities(prop_type: str, length: float) -> Tuple[Optional[float], Opti
     if length < min_length or length > max_length:
         return None, None
     
-    # Find the bracketing data points
-    for i in range(len(data)-1):
-        if data[i][0] <= length <= data[i+1][0]:
-            comp = interpolate_value(length, data[i][0], data[i][1], data[i+1][0], data[i+1][1])
-            tension = data[i][2] if length == data[i][0] else None
-            return comp, tension
-    
-    # Exact match at a data point
+    # Check for exact match first
     for length_val, comp, tension in data:
         if length == length_val:
+            return comp, tension
+    
+    # Find the bracketing data points for interpolation
+    for i in range(len(data)-1):
+        if data[i][0] <= length <= data[i+1][0]:
+            # Interpolate compression
+            comp = interpolate_value(length, data[i][0], data[i][1], data[i+1][0], data[i+1][1])
+            
+            # Interpolate tension if both points have tension values
+            if data[i][2] is not None and data[i+1][2] is not None:
+                tension = interpolate_value(length, data[i][0], data[i][2], data[i+1][0], data[i+1][2])
+            else:
+                tension = None
             return comp, tension
     
     return None, None
