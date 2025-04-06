@@ -1,5 +1,23 @@
 import streamlit as st
 from typing import Dict, Tuple, Optional, List
+from PIL import Image
+import requests
+from io import BytesIO
+
+# Logo URLs
+LOGO_URL = "https://drive.google.com/uc?export=download&id=1VebdT2loVGX57noP9t2GgQhwCNn8AA3h"
+FALLBACK_LOGO_URL = "https://onedrive.live.com/download?cid=A48CC9068E3FACE0&resid=A48CC9068E3FACE0%21s252b6fb7fcd04f53968b2a09114d33ed"
+
+def load_logo(url):
+    try:
+        response = requests.get(url, timeout=5)
+        img = Image.open(BytesIO(response.content))
+        return img
+    except:
+        return None
+
+# Load logo (try primary URL first, then fallback)
+logo = load_logo(LOGO_URL) or load_logo(FALLBACK_LOGO_URL)
 
 # Data structure containing all prop information with improved organization
 props_data: Dict[str, List[Tuple[float, float, Optional[float]]]] = {
@@ -25,7 +43,6 @@ props_data: Dict[str, List[Tuple[float, float, Optional[float]]]] = {
     "Kicker AV 210 (1.28-2.10 m)": [(1.28, 34.2, 26.3), (1.69, 34.2, 26.3), (1.90, 25.5, 26.3), (2.10, 19.0, 26.3)],
     "Kicker AV RSS III (2.03-2.92 m)": [(2.03, 34.2, 26.3), (2.30, 33.2, 26.3), (2.60, 22.7, 26.3), (2.94, 14.2, 26.3)],
 
-
     # ===== COMPRESSION SPINDLES =====
     "Compression Brace SKS 2 (1.35-1.93 m)": [(1.35, 196.2, 63.8), (1.50, 191.2, 63.8), (1.65, 186.1, 63.8), (1.80, 175.6, 63.8), (1.93, 149.4, 63.8)],
     "Compression Brace SKS 3 (1.75-2.33 m)": [(1.75, 189.5, 63.8), (1.90, 185.2, 63.8), (2.05, 178.4, 63.8), (2.20, 166.4, 63.8), (2.33, 141.6, 63.8)],
@@ -35,8 +52,6 @@ props_data: Dict[str, List[Tuple[float, float, Optional[float]]]] = {
     "Strut VARIOKIT (4.00-7.00 m)": [(4.00, 160.0, 160.0), (7.00, 160.0, 160.0)],
     "Strut VARIOKIT (6.00-9.00 m)": [(6.00, 160.0, 159.7), (7.00, 160.0, 159.7), (8.00, 146.5, 159.7), (9.00, 122.9, 159.7)],
     
-
-
     # ===== HEAVY-DUTY SPINDLES =====
      "SLS 40/80 (0.40-0.80 m)": [(0.40, 88.0, 70.8), (0.80, 88.0, 70.8)],
     "SLS 80/140 (0.80-1.40 m)": [(0.80, 107.1, 81.6), (1.40, 107.1, 81.6)],
@@ -67,8 +82,6 @@ props_data: Dict[str, List[Tuple[float, float, Optional[float]]]] = {
     "SLS 380/480 + Adapter (3.99-4.91 m)": [(3.99, 71.0, 105.4), (4.10, 66.4, 105.4), (4.30, 58.6, 105.4), (4.50, 50.3, 105.4),
                                            (4.70, 43.2, 105.4), (4.91, 36.4, 105.4)],
     
-    # ... (other SLS spindles remain the same)
-
     # ===== SCS SPINDLES =====
     "SCS 198/250 (1.98-2.50 m)": [
         (1.98, 264, 211), (2.10, 247, 211), 
@@ -138,8 +151,19 @@ st.markdown("""
     .tension {
         background-color: #fff7e6 !important;
     }
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# Logo display
+if logo:
+    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    st.image(logo, width=200)  # Adjust width as needed
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Header
 st.markdown('<p class="header">PERI Push-Pull Prop Capacity Calculator</p>', unsafe_allow_html=True)
